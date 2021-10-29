@@ -1,7 +1,7 @@
 package ru.sapteh.dao.impl;
 
 import ru.sapteh.dao.Dao;
-import ru.sapteh.model.User;
+import ru.sapteh.model.Auto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,41 +10,43 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoImpl implements Dao<User, Integer> {
+public class AutoDaoImpl implements Dao<Auto, Integer> {
 
     private final Connection connection;
 
-    public UserDaoImpl(Connection connection) {
+    public AutoDaoImpl(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public User findById(Integer id) {
-        String query = "SELECT * FROM users WHERE id=?";
-        User user = null;
+    public Auto findById(Integer id) {
+        String query = "SELECT * FROM auto WHERE id=?";
+        Auto auto = null;
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, id);
 
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                user = new User(
+                auto = new Auto(
                         resultSet.getInt("id"),
-                        resultSet.getString("first_name"),
-                        resultSet.getString("last_name")
+                        resultSet.getString("model"),
+                        resultSet.getString("marka"),
+                        resultSet.getString("body_type"),
+                        resultSet.getInt("type_gasoline")
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return user;
+        return auto;
 
     }
 
     @Override
-    public List<User> findAll() {
-        List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM users";
+    public List<Auto> findAll() {
+        List<Auto> autos = new ArrayList<>();
+        String query = "SELECT * FROM auto";
 
         try {
             PreparedStatement statement = connection.prepareStatement(query);
@@ -52,27 +54,31 @@ public class UserDaoImpl implements Dao<User, Integer> {
 
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                users.add(
-                        new User(
+                autos.add(
+                        new Auto(
                                 resultSet.getInt("id"),
-                                resultSet.getString("first_name"),
-                                resultSet.getString("last_name")
+                                resultSet.getString("model"),
+                                resultSet.getString("marka"),
+                                resultSet.getString("body_type"),
+                                resultSet.getInt("type_gasoline")
                         )
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return autos;
     }
 
     @Override
-    public void save(User user) {
-        String save = "INSERT INTO users (first_name, last_name) VALUES (?, ?)";
+    public void save(Auto auto) {
+        String save = "INSERT INTO auto (model, marka, body_type, type_gasoline) VALUES (?, ?,?,?)";
         try {
             PreparedStatement statement = connection.prepareStatement(save);
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
+            statement.setString(1, auto.getModel());
+            statement.setString(2, auto.getMarka());
+            statement.setString(3, auto.getBodyType());
+            statement.setInt(4, auto.getTypeGasoline());
             int result = statement.executeUpdate();
             System.out.println(result == 1 ? "Save success" : "Save failed");
         } catch (SQLException e) {
@@ -82,13 +88,15 @@ public class UserDaoImpl implements Dao<User, Integer> {
     }
 
     @Override
-    public void update(User user) {
-        String update = "UPDATE users SET first_name=?, last_name=? WHERE id=?";
+    public void update(Auto auto) {
+        String update = "UPDATE auto SET model=?, marka=?, body_type=?, type_gasoline=? WHERE id=?";
         try {
             PreparedStatement statement = connection.prepareStatement(update);
-            statement.setString(1, user.getFirstName());
-            statement.setString(2, user.getLastName());
-            statement.setInt(3, user.getId());
+            statement.setString(1, auto.getModel());
+            statement.setString(2, auto.getMarka());
+            statement.setString(3, auto.getBodyType());
+            statement.setInt(4, auto.getTypeGasoline());
+            statement.setInt(5, auto.getId());
             int result = statement.executeUpdate();
             System.out.println(result == 1 ? "Update success" : "Update failed");
         } catch (SQLException e) {
@@ -99,7 +107,7 @@ public class UserDaoImpl implements Dao<User, Integer> {
 
     @Override
     public void deleteById(Integer id) {
-        String delete = "DELETE FROM users WHERE id=?";
+        String delete = "DELETE FROM auto WHERE id=?";
         try {
             PreparedStatement statement = connection.prepareStatement(delete);
             statement.setInt(1, id);

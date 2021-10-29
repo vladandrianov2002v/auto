@@ -5,20 +5,20 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Connector {
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://localhost:3306/simple_crud_app";
-    private static final String USER = "root";
-    private static final String PASSWORD = "1234";
+
 
     private Connector() {
 
     }
 
     public static Connection getInstance() {
+        PropertyUtil property = new PropertyUtil();
         Connection connection = null;
         try {
-            Class.forName(DRIVER);
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            Class.forName(property.getProperties("driver"));
+            connection = DriverManager.getConnection(property.getProperties("url"),
+                    property.getProperties("user"),
+                    property.getProperties("password"));
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             System.out.println("Connection failed");
